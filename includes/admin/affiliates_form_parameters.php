@@ -41,7 +41,7 @@ $parameters = array(
 			
 				'status' => array(
 					'type' => 'checkbox',
-					'name' => 'enable',
+					'name' => 'status',
 					'description' => 'Enable Ebay?',
 					'default' => 'checked'
 				),

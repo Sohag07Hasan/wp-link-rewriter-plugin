@@ -55,9 +55,49 @@
 				 * use this filter to add affilates
 				 */
 				self::$affiliates_options = apply_filters('link_rewrite_affiliates', $parameters);
-	   		}
-						
+	   		}						
 	   }
+
+		
+		/**
+		 * return form fiels based on different combination
+		 */
+	   static function get_form_field($aff, $params , $current_value=''){
+	   		switch ($params['type']){
+				case "checkbox":
+					$checked = $current_value == 1 ? "checked" : "";
+				//	return "<input name='{$params['name']}' type='checkbox' value='1' {$checked}  />";
+				//	return '<input type="checkbox" name="'.$aff[$params['name']].'" value="1" '.$checked.' >';
+					return '<input type="checkbox" name="'.$aff. '['.$params['name'].']' .'" value="1" '.$checked.' >';
+					break;
+				case "input":
+				//	return "<input name='{$params['name']}' type='text' value='{$current_value}/>'";
+				//	return '<input type="checkbox" name="'.$aff[$params['name']].'" value="'.$current_value.'" '.$checked.' >';
+					return '<input type="checkbox" name="'.$aff. '['.$params['name'].']' .'" value="'.$current_value.' >';
+					break;
+	   		}
+	   }
+	   
+	   
+	   
+	   /**
+	    * update the options from menu page
+	    */
+	    static function update_options($options){
+	    	update_option('link_rewriter_options', $options);
+	    }
+		
+		
+		/**
+		 * ge the options set from menu page
+		 */
+		 static function get_options(){
+		 	$options = get_option('link_rewriter_options');
+			return $options;
+		 }
+		
+		
+
  }
  
 ?>
