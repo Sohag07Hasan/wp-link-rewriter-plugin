@@ -15,6 +15,7 @@
 		add_action('admin_menu', array(get_class(), 'admin_menu_for_wp_link_rewriter')); //add amdin menu
 		add_filter('the_title', array(get_class(), 'include_affiliates_below_title'), 10, 2);	//add affiliates links after the title
 		add_action('add_meta_boxes', array(get_class(), 'metabox_at_post_edit_page'));	//add a metabox in post editing page
+		add_action('save_post', array(get_class(), 'save_metabox_data'), 10, 1); //save metabox info
 	}
 	
 	
@@ -103,10 +104,8 @@
 		 * return title followed by affiliates
 		 */
 		 static function include_affiliates_below_title($title, $post_id){
-		 	global $post;
-			
-			$amazon_url = self::get_amazon_url($post->post_title);
-			
+		 	global $post;			
+			$amazon_url = self::get_amazon_url($post->post_title);			
 			return $title . '<br/><p style="color: red"> <a target="_blank" href="'.$amazon_url.'">Amazon</a> </p>';			
 		 }
 		 
@@ -126,27 +125,66 @@
 		 
 		 /**
 		  * generates affiliates links
+		  * return affiliate links baesed on options
 		  */
-		  static function generate_affiliates(){
-		  	
-		  }
+		 static function get_affiliates_links(){
+		  	foreach(WpLinkRewriter::$affiliates_options as $aff => $param){
+		 		foreach($param['form'] as $key => $con):
+					//$options[$aff[$con['name']]] = $_POST[$aff[$con['name']]];
+					$options[$aff][$con['name']] = $_POST[$aff][$con['name']];				
+				endforeach;
+		 	}
+		 }
 		  
 		  
 		 /**
 		  * adds metabox to handle with affilate keywords
 		  */
-		  static function metabox_at_post_edit_page(){
+		 static function metabox_at_post_edit_page(){
 		  	add_meta_box('matebox-to-handle-keywords', 'Affiliate Keywords', array(get_class(), 'metabox_to_deal_keywords'), 'post', 'side', 'high');	   	
-		  }
+		 }
 		 
 		 
 		 /**
 		  * affiliate keywords deals with this function
 		  */
 		 static function metabox_to_deal_keywords($post){
+		 	$keywords = self::get_keywords($post->ID);
 		 	echo '<strong>keywords to generate affiliate links</strong>';
-			echo '<p><input type="text" name="affiliate_keywords"></p>';
+			echo '<p><input size="0%" type="text" value="'.$keywords.'" name="affiliate_keywords"></p>';
 		 }
+		
+		
+		static function save_metabox_data($post_id){
+			// If this is an autosave, our form has not been submitted, so we don't want to do anything.
+			if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){
+				return;
+			}
+			
+			//now it's safe to save info
+			if(isset($_POST['affiliate_keywords'])){
+				return self::save_keywords($post_id, $_POST['affiliate_keywords']);
+			}
+		}
+		
+		
+		/**
+		 * save keywords against each post
+		 */
+		static function save_keywords($post_id, $keywords){
+			update_post_meta($post_id, 'affiliate_keywords', trim($keywords));
+		}
+		
+		
+		/**
+		 * get saved keywords against each post
+		 */
+		static function get_keywords($post_id){
+			$keywords = get_post_meta($post_id, 'affiliate_keywords', true);
+			
+			return empty($keywords) ? '' : $keywords;
+		}
+		
 
  }
  
