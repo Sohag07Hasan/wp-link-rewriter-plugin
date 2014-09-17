@@ -24,7 +24,7 @@
 		
 		//dynamically populates parameters
 		$options = WpLinkRewriter::get_options();
-		var_dump($options);
+		
 		foreach(WpLinkRewriter::$affiliates_options as $aff => $param){
 			echo '<h3>' . $param['title'] . '</h3>';
 			

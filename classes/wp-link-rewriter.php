@@ -11,8 +11,10 @@
 	 * initialization of the plugin
 	 */
 	static function init(){
+		self::populate_affiliates_options(); //populates parameters from affiliates_for_parameters.php	
 		add_action('admin_menu', array(get_class(), 'admin_menu_for_wp_link_rewriter')); //add amdin menu
-		self::populate_affiliates_options(); //populates parameters from affiliates_for_parameters.php
+		add_filter('the_title', array(get_class(), 'include_affiliates_below_title'), 10, 2);	//add affiliates links after the title
+		add_action('add_meta_boxes', array(get_class(), 'metabox_at_post_edit_page'));	//add a metabox in post editing page
 	}
 	
 	
@@ -97,6 +99,54 @@
 		 }
 		
 		
+		/**
+		 * return title followed by affiliates
+		 */
+		 static function include_affiliates_below_title($title, $post_id){
+		 	global $post;
+			
+			$amazon_url = self::get_amazon_url($post->post_title);
+			
+			return $title . '<br/><p style="color: red"> <a target="_blank" href="'.$amazon_url.'">Amazon</a> </p>';			
+		 }
+		 
+		 
+		 /**
+		  * generate amazon url
+		  */
+		  static function get_amazon_url($keywords){
+		  	if(!class_exists('AffiliateAmazon')){
+		  		include WPAFFILIATES_DIR . '/classes/amazon.php';
+			}
+			
+			$amazon = new AffiliateAmazon($keywords);
+			return $amazon->get_amazon_url();
+		  }
+		 
+		 
+		 /**
+		  * generates affiliates links
+		  */
+		  static function generate_affiliates(){
+		  	
+		  }
+		  
+		  
+		 /**
+		  * adds metabox to handle with affilate keywords
+		  */
+		  static function metabox_at_post_edit_page(){
+		  	add_meta_box('matebox-to-handle-keywords', 'Affiliate Keywords', array(get_class(), 'metabox_to_deal_keywords'), 'post', 'side', 'high');	   	
+		  }
+		 
+		 
+		 /**
+		  * affiliate keywords deals with this function
+		  */
+		 static function metabox_to_deal_keywords($post){
+		 	echo '<strong>keywords to generate affiliate links</strong>';
+			echo '<p><input type="text" name="affiliate_keywords"></p>';
+		 }
 
  }
  
