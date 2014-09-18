@@ -12,7 +12,7 @@
 		$this->amazon_url = sprintf($this->base_url, 'nb_sb_noss?', urldecode($keywords));
 	}
 	
-	function get_amazon_url(){
+	function get_url(){
 		return $this->amazon_url;
 	}
 	

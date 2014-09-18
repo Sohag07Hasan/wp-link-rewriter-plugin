@@ -16,6 +16,8 @@
 		add_filter('the_title', array(get_class(), 'include_affiliates_below_title'), 10, 2);	//add affiliates links after the title
 		add_action('add_meta_boxes', array(get_class(), 'metabox_at_post_edit_page'));	//add a metabox in post editing page
 		add_action('save_post', array(get_class(), 'save_metabox_data'), 10, 1); //save metabox info
+		
+		//self::get_affiliates_links();
 	}
 	
 	
@@ -104,36 +106,67 @@
 		 * return title followed by affiliates
 		 */
 		 static function include_affiliates_below_title($title, $post_id){
-		 	global $post;			
-			$amazon_url = self::get_amazon_url($post->post_title);			
-			return $title . '<br/><p style="color: red"> <a target="_blank" href="'.$amazon_url.'">Amazon</a> </p>';			
+		 	if(is_admin()) return $title; //if admin page return the original title
+		 	//if(in_array(get_post_type($post_id), array('post', 'page'))) return $title; //skip if the post type is post or page
+		 	
+					 	
+		 	global $post;
+			$affiliate_links = self::get_affiliate_links($title, $post_id);	
+			
+			$affiliates = array();
+			foreach($affiliate_links as $brand => $link){
+				$affiliates[$brand] = '<a target="_blank" href="'.$link.'">'.self::$affiliates_options[$brand]['title'].'</a>';			
+			}
+			
+			
+			return $title . '<br/><p style="color: red">' . implode(' | ', $affiliates) . '</p>';		
 		 }
 		 
 		 
 		 /**
 		  * generate amazon url
 		  */
-		  static function get_amazon_url($keywords){
-		  	if(!class_exists('AffiliateAmazon')){
-		  		include WPAFFILIATES_DIR . '/classes/amazon.php';
+		  static function get_affilate_url($brand, $keywords){
+		  	switch($brand){
+				case 'amazon':
+					$class = 'AffiliateAmazon';
+					$file = WPAFFILIATES_DIR . "/classes/amazon.php";
+				break;
+				case 'ebay':
+					$class = 'AffiliateEbay';
+					$file = WPAFFILIATES_DIR . "/classes/ebay.php";
+				break;
+		  	}
+			
+		  	if(!class_exists($class)){
+		  		include $file;
 			}
 			
-			$amazon = new AffiliateAmazon($keywords);
-			return $amazon->get_amazon_url();
-		  }
+			$brand_obj = new $class($keywords);			
+			return $brand_obj->get_url();
+		  }  
+		  
 		 
 		 
 		 /**
 		  * generates affiliates links
 		  * return affiliate links baesed on options
 		  */
-		 static function get_affiliates_links(){
-		  	foreach(WpLinkRewriter::$affiliates_options as $aff => $param){
+		 static function get_affiliate_links($title, $post_id){
+		 				
+			$options = WpLinkRewriter::get_options();
+			$affiliate_links = array();
+			$keywords = $title;
+						 
+			foreach(WpLinkRewriter::$affiliates_options as $aff => $param){
 		 		foreach($param['form'] as $key => $con):
-					//$options[$aff[$con['name']]] = $_POST[$aff[$con['name']]];
-					$options[$aff][$con['name']] = $_POST[$aff][$con['name']];				
+					if((isset($options[$aff][$con['name']]))){
+						$affiliate_links[$aff] = self::get_affilate_url($aff, $keywords);
+					}			
 				endforeach;
 		 	}
+
+			return $affiliate_links;				
 		 }
 		  
 		  
