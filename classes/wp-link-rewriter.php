@@ -129,7 +129,7 @@
 		 */
 		 static function include_affiliates_below_title($title, $post_id){
 		 	if(is_admin()) return $title; //if admin page return the original title
-		 	//if(in_array(get_post_type($post_id), array('post', 'page'))) return $title; //skip if the post type is post or page
+		 	if(!in_array(get_post_type($post_id), array('product'))) return $title; //skip if the post type is post or page
 		 						 	
 		 	global $post;
 		 	
@@ -167,6 +167,16 @@
 				case 'entertainment_earth':
 					$class = 'AffiliateEntertainmentEarth';
 					$file = WPAFFILIATES_DIR . "/classes/entertainmentearth.php";
+					break;
+				
+				case 'forbidden_planet':
+					$class = 'AffiliateForbiddenPlanet';
+					$file = WPAFFILIATES_DIR . "/classes/forbiddenplanet.php";
+					break;
+					
+				case 'hot_topic':
+					$class = 'AffiliateHotTopic';
+					$file = WPAFFILIATES_DIR . "/classes/hottopic.php";
 					break;
 		  	}
 			

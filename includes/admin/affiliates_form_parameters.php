@@ -97,6 +97,68 @@ $parameters = array(
 			)
 		),
 		
+		'forbidden_planet' => array(
+			'title' => 'Forbidden Planet',
+			'description' => 'Forbidden Planet affiliate settings',
+			'form' => array(
+			
+				'status' => array(
+					'type' => 'checkbox',
+					'name' => 'status',
+					'description' => 'Enable Forbidden planet?',
+					'default' => 'checked'
+				),
+				
+				/*
+				'url' => array(
+					'type' => 'text',
+					'name' => 'url',
+					'description' => 'amazon product search url',
+					'example' => ''
+				), 
+				
+				
+				'url_structure' => array(
+					'type' => 'text',
+					'name' => 'url_structure',
+					'description' => 'Url structure',
+					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
+				),
+				 */ 
+			)
+		),
+		
+		
+		'hot_topic' => array(
+			'title' => 'Hot Topic',
+			'description' => 'Hot Topic affiliate settings',
+			'form' => array(
+			
+				'status' => array(
+					'type' => 'checkbox',
+					'name' => 'status',
+					'description' => 'Enable Hot Topic?',
+					'default' => 'checked'
+				),
+				
+				/*
+				'url' => array(
+					'type' => 'text',
+					'name' => 'url',
+					'description' => 'amazon product search url',
+					'example' => ''
+				), 
+				
+				
+				'url_structure' => array(
+					'type' => 'text',
+					'name' => 'url_structure',
+					'description' => 'Url structure',
+					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
+				),
+				 */ 
+			)
+		),
 		
 	); 
 	
