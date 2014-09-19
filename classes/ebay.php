@@ -9,11 +9,15 @@
 	var $ebay_url = '';
  	
 	function __construct($keywords=''){
-		$this->ebay_url = sprintf($this->base_url, 'R40', urldecode($keywords));
+		$this->ebay_url = sprintf($this->base_url, 'R40', $this->sanitized_keywords($keywords));
 	}
 	
 	function get_url(){
 		return $this->ebay_url;
+	}
+	
+	function sanitized_keywords($keywords){
+		return urldecode($keywords);
 	}
 	
  }

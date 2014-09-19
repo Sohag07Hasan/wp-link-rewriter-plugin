@@ -13,11 +13,25 @@
 	static function init(){
 		self::populate_affiliates_options(); //populates parameters from affiliates_for_parameters.php	
 		add_action('admin_menu', array(get_class(), 'admin_menu_for_wp_link_rewriter')); //add amdin menu
-		add_filter('the_title', array(get_class(), 'include_affiliates_below_title'), 10, 2);	//add affiliates links after the title
+		
+		
+		add_action('woocommerce_before_main_content', array(get_class(), 'launch_woocommerce'));
+		add_action('woocommerce_after_main_content', array(get_class(), 'end_woocommerce'));		
+		
 		add_action('add_meta_boxes', array(get_class(), 'metabox_at_post_edit_page'));	//add a metabox in post editing page
 		add_action('save_post', array(get_class(), 'save_metabox_data'), 10, 1); //save metabox info
 		
 		//self::get_affiliates_links();
+	}
+	
+	
+	static function launch_woocommerce(){
+		add_filter('the_title', array(get_class(), 'include_affiliates_below_title'), 10, 2);	//add affiliates links after the title
+	}
+	
+	
+	static function end_woocommerce(){
+		remove_filter('the_title', array(get_class(), 'include_affiliates_below_title'), 10);
 	}
 	
 	
@@ -26,6 +40,7 @@
 	 */
 	 static function admin_menu_for_wp_link_rewriter(){
 	 	add_menu_page('wordpress link rewrite', 'Link Rewrite', 'manage_options', 'wp_link_rewriter', array(get_class(), 'link_rewriter_menupage'));
+	 	add_submenu_page('wp_link_rewriter', 'local links', 'Local Links', 'manage_options', 'submenu_page_for_local_links', array(get_class(), 'local_links_submenu_page'));
 	 }
 	 
 	 
@@ -33,7 +48,14 @@
 	  * link rewriter menu page
 	  */
 	  static function link_rewriter_menupage(){
-	  		include self::get_script_location('link_rewriter_menupage.php');
+	  	include self::get_script_location('link_rewriter_menupage.php');
+	  }
+	  
+	  /**
+	   * submenu page to advertise local links
+	   */
+	  static function local_links_submenu_page(){
+	  	include self::get_script_location('local_links_submenu_page.php');
 	  }
 	  
 	  
@@ -108,21 +130,19 @@
 		 static function include_affiliates_below_title($title, $post_id){
 		 	if(is_admin()) return $title; //if admin page return the original title
 		 	//if(in_array(get_post_type($post_id), array('post', 'page'))) return $title; //skip if the post type is post or page
-		 	
-					 	
+		 						 	
 		 	global $post;
 		 	
 			$keywords = self::get_keywords($post->ID);
-			$title = empty($keywords) ? $title : $keywords;
-			
-			$affiliate_links = self::get_affiliate_links($title, $post_id);	
+			$keywords = empty($keywords) ? $title : $keywords;
+						
+			$affiliate_links = self::get_affiliate_links($keywords, $post_id);	
 			
 			$affiliates = array();
 			foreach($affiliate_links as $brand => $link){
 				$affiliates[$brand] = '<a target="_blank" href="'.$link.'">'.self::$affiliates_options[$brand]['title'].'</a>';			
 			}
-			
-			
+						
 			return $title . '<br/><p style="color: red">' . implode(' | ', $affiliates) . '</p>';		
 		 }
 		 
@@ -137,11 +157,17 @@
 				case 'amazon':
 					$class = 'AffiliateAmazon';
 					$file = WPAFFILIATES_DIR . "/classes/amazon.php";
-				break;
+					break;
+				
 				case 'ebay':
 					$class = 'AffiliateEbay';
 					$file = WPAFFILIATES_DIR . "/classes/ebay.php";
-				break;
+					break;
+				
+				case 'entertainment_earth':
+					$class = 'AffiliateEntertainmentEarth';
+					$file = WPAFFILIATES_DIR . "/classes/entertainmentearth.php";
+					break;
 		  	}
 			
 		  	if(!class_exists($class)){
@@ -180,7 +206,7 @@
 		  * adds metabox to handle with affilate keywords
 		  */
 		 static function metabox_at_post_edit_page(){
-		  	add_meta_box('matebox-to-handle-keywords', 'Affiliate Keywords', array(get_class(), 'metabox_to_deal_keywords'), 'post', 'side', 'high');	   	
+		  	add_meta_box('matebox-to-handle-keywords', 'Affiliate Keywords', array(get_class(), 'metabox_to_deal_keywords'), 'product', 'side', 'high');	   	
 		 }
 		 
 		 
