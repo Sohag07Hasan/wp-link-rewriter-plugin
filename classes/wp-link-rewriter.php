@@ -111,6 +111,10 @@
 		 	
 					 	
 		 	global $post;
+		 	
+			$keywords = self::get_keywords($post->ID);
+			$title = empty($keywords) ? $title : $keywords;
+			
 			$affiliate_links = self::get_affiliate_links($title, $post_id);	
 			
 			$affiliates = array();
@@ -121,6 +125,8 @@
 			
 			return $title . '<br/><p style="color: red">' . implode(' | ', $affiliates) . '</p>';		
 		 }
+		 
+				
 		 
 		 
 		 /**

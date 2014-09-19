@@ -9,7 +9,7 @@
 	var $amazon_url = '';
  	
 	function __construct($keywords=''){
-		$this->amazon_url = sprintf($this->base_url, 'nb_sb_noss?', urldecode($keywords));
+		$this->amazon_url = sprintf($this->base_url, 'nb_sb_noss', urldecode($keywords));
 	}
 	
 	function get_url(){
