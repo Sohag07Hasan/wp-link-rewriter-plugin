@@ -57,15 +57,17 @@ echo '<br/><br/></hr>';
 
 //local links
 $local_links = LinkRewriterLocalLinks::get_local_links();
+$post_local_links = self::get_local_links_by_post($post->ID);
 
 
 echo '<h4>Local Links</h4>';
 echo 'select local links to show with affiliate buttons';
 if($local_links){
 	echo '<table class="form-table">';
-	echo '<tr><td colspan="2"><select style="width: 70%" multiple="multiple">';
+	echo '<tr><td colspan="2"><select name="local_links[]" style="width: 70%" multiple="multiple">';
 		foreach($local_links as $link){
-			echo '<option value="'.$link->id.'">'.$link->name. ' ('.$link->link.') ' .'</option>';
+			$selected = in_array($link->id, $post_local_links) ? 'selected' : '';
+			echo '<option '.$selected.' value="'.$link->id.'">'.$link->name. ' ('.$link->link.') ' .'</option>';
 		}
 	echo '</select></td></tr>';
 }

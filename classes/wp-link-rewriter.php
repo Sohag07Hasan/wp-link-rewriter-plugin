@@ -274,6 +274,18 @@
 				
 				update_post_meta($post_id, 'local_positions', $positions);
 			}
+			
+			//saving loal links
+			if(isset($_POST['local_links'])){
+				update_post_meta($post_id, 'local_links', $_POST['local_links']);
+			}
+		}
+		
+		
+		static function get_local_links_by_post($post_id){
+			$links = get_post_meta($post_id, 'local_links', true);
+			
+			return is_array($links) ? $links : array();
 		}
 		
 		
