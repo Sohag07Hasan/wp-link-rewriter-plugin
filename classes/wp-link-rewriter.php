@@ -26,6 +26,7 @@
 		add_action('add_meta_boxes', array(get_class(), 'metabox_at_post_edit_page'));	//add a metabox in post editing page
 		add_action('save_post', array(get_class(), 'save_metabox_data'), 10, 1); //save metabox info
 		
+		
 	}
 		
 	/**
@@ -85,9 +86,30 @@
 				case "text":
 					return '<input type="text" id="'.$aff. '['.$params['name'].']' .'" name="'.$aff. '['.$params['name'].']' .'" value="'.$current_value.'" />  <label for="'.$aff. '['.$params['name'].']' .'"> '.$params['description'].' </label> ';
 					break;
+				
+				case "select":
+					return self::form_field_select($aff, $params , $current_value);
+					break;
 	   		}
 	   }
 	   
+	   
+	   
+	   static function form_field_select($aff, $params , $current_value){
+	   		$options = array('Zero', '1st', '2nd', '3rd', '4th', '5th', '6th');
+			$text = '<select id="'.$aff. '['.$params['name'].']' .'" name="'.$aff. '['.$params['name'].']' .'">' ;
+			
+			foreach($options as $key => $opt){
+				if($key == 0) continue;				
+				
+				$current_value = ($current_value >=0 && $current_value <=6) ? $current_value : $params['default'];
+				$selected = ($current_value == $key) ? 'selected' : '';
+				$text .= '<option value="'.$key.'" '.$selected.' >'.$opt.'</option>';
+			}
+			
+			$text .= '</select> <label for="'.$aff. '['.$params['name'].']' .'"> '.$params['description'].' </label> ';
+			return $text;
+	   }
 	   
 	   
 	   /**
@@ -212,19 +234,8 @@
 		 /**
 		  * affiliate keywords deals with this function
 		  */
-		 static function metabox_to_deal_keywords($post){
-		 	$keywords = self::get_keywords($post->ID);
-			$keywords = !is_array($keywords) ? array() : $keywords;
-						
-			echo '<table class="form-table">';
-					 			
-			foreach(WpLinkRewriter::$affiliates_options as $aff => $param){
-				?>
-				<tr> <td>Keywords for <?php echo $param['title']; ?> </td> <td colspan="2"> <input type="text" size="50%", name="affiliate_keywords[<?php echo $aff; ?>]" value="<?php echo isset($keywords[$aff]) ? $keywords[$aff] : ''; ?>" ></td></tr>
-				<?php
-			}
-						
-			echo '</table>';
+		 static function metabox_to_deal_keywords($post){		 	
+			include self::get_script_location('metabox-for-product.php', 'admin');		 	
 		 }
 		
 		
@@ -245,10 +256,46 @@
 				foreach($_POST['affiliate_keywords'] as $key => $value){
 					$keywords[$key] = trim($value);
 				}
-				return self::save_keywords($post_id, $keywords);
+				self::save_keywords($post_id, $keywords);
+			}
+			
+			if(isset($_POST['local_position_enabled'])){
+				update_post_meta($post_id, 'local_position_enabled', 'y');
+			}
+			else{
+				update_post_meta($post_id, 'local_position_enabled', '');
+			}
+			
+			if(isset($_POST['position'])){
+				$positions = array();
+				foreach($_POST['position'] as $key => $value){
+					$positions[$key] = $value;
+				}
+				
+				update_post_meta($post_id, 'local_positions', $positions);
 			}
 		}
 		
+		
+		/**
+		 * returns boolean based on local posiiton status
+		 */
+		static function is_local_position_enabled($post_id){
+			$enabled = get_post_meta($post_id, 'local_position_enabled', true);
+			
+			return ($enabled == 'y') ? true : false;
+		}
+		
+		
+		/**
+		 * return local positions
+		 */
+		 static function get_local_positions($post_id){
+		 	$positions = get_post_meta($post_id, 'local_positions', true);
+			
+			return is_array($positions) ? $positions : array();
+		 }
+		 
 		
 		/**
 		 * save keywords against each post

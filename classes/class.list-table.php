@@ -63,7 +63,7 @@ class LocalLinksListTable extends WP_List_Table{
 		$this->current_page = $this->get_pagenum(); //it comes form mother class (WP_List_Table)
 	
 		$this->total_items = $this->LinkDb->get_total_links($_REQUEST['s']);
-		$this->per_page = 25;
+		$this->per_page = 20;
 	
 		$this->set_pagination_args( array(
 				'total_items' => $this->total_items,                  //WE have to calculate the total number of items

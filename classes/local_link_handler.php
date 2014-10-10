@@ -130,6 +130,12 @@ class LinkRewriterLocalLinks{
 		return new LocalLinksListTable();
 	}
 	
+	
+	static function get_local_links(){
+		$LinkDb = self::get_db_instance();
+		return $LinkDb->get_local_links();
+	}
+	
 }
 
 ?>

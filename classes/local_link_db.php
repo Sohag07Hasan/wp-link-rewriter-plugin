@@ -89,6 +89,12 @@
 		}
 		return $this->db->get_var($sql);
 	}
+
+	
+	function get_local_links(){
+		$results = $this->db->get_results("select * from $this->link_table order by name asc");
+		return $results;
+	}
 		
  }
  

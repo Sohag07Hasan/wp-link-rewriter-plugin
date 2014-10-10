@@ -35,6 +35,13 @@ $parameters = array(
 					'description' => 'Button text',
 					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
 				),
+				
+				'position' => array(
+					'type' => 'select',
+					'name' => 'position',
+					'description' => 'Button Position',
+					'default' => '1'
+				)
 				 
 			)
 		),
@@ -73,6 +80,13 @@ $parameters = array(
 					'description' => 'Button text',
 					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
 				),
+				
+				'position' => array(
+					'type' => 'select',
+					'name' => 'position',
+					'description' => 'Button Position',
+					'default' => '2'
+				)
 			)
 		),
 		
@@ -110,6 +124,13 @@ $parameters = array(
 					'description' => 'Button text',
 					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
 				),
+				
+				'position' => array(
+					'type' => 'select',
+					'name' => 'position',
+					'description' => 'Button Position',
+					'default' => '3'
+				)
 			)
 		),
 		
@@ -146,6 +167,13 @@ $parameters = array(
 					'description' => 'Button text',
 					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
 				),
+				
+				'position' => array(
+					'type' => 'select',
+					'name' => 'position',
+					'description' => 'Button Position',
+					'default' => '4'
+				)
 			)
 		),
 		
@@ -183,8 +211,34 @@ $parameters = array(
 					'description' => 'Button text',
 					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
 				),
+				
+				'position' => array(
+					'type' => 'select',
+					'name' => 'position',
+					'description' => 'Button Position',
+					'default' => '5'
+				)
 			)
 		),
+		
+		'local_links' => array(
+			'title' => 'Local Links',
+			'form' => array(
+				'status' => array(
+					'type' => 'checkbox',
+					'name' => 'status',
+					'description' => 'Enable Local Links',
+					'default' => 'checked'
+				),
+				
+				'position' => array(
+					'type' => 'select',
+					'name' => 'position',
+					'description' => 'Button Position',
+					'default' => '6'
+				)
+			)
+		)
 		
 	); 
 	
