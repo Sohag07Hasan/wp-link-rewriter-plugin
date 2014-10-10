@@ -11,36 +11,29 @@
 	 * initialization of the plugin
 	 */
 	static function init(){
+		
+		include WPAFFILIATES_DIR . '/classes/woocommerce_handler.php'; //including woocommmerce hanlder
+		LinkRewriterWithWoocommerce::init();
+		
+		
+		include WPAFFILIATES_DIR . '/classes/local_link_handler.php';
+		LinkRewriterLocalLinks::init();
+		  		
+		
 		self::populate_affiliates_options(); //populates parameters from affiliates_for_parameters.php	
 		add_action('admin_menu', array(get_class(), 'admin_menu_for_wp_link_rewriter')); //add amdin menu
-		
-		
-		add_action('woocommerce_before_main_content', array(get_class(), 'launch_woocommerce'));
-		add_action('woocommerce_after_main_content', array(get_class(), 'end_woocommerce'));		
-		
+			
 		add_action('add_meta_boxes', array(get_class(), 'metabox_at_post_edit_page'));	//add a metabox in post editing page
 		add_action('save_post', array(get_class(), 'save_metabox_data'), 10, 1); //save metabox info
 		
-		//self::get_affiliates_links();
 	}
-	
-	
-	static function launch_woocommerce(){
-		add_filter('the_title', array(get_class(), 'include_affiliates_below_title'), 10, 2);	//add affiliates links after the title
-	}
-	
-	
-	static function end_woocommerce(){
-		remove_filter('the_title', array(get_class(), 'include_affiliates_below_title'), 10);
-	}
-	
-	
+		
 	/**
 	 * initialize admin menu 
 	 */
 	 static function admin_menu_for_wp_link_rewriter(){
 	 	add_menu_page('wordpress link rewrite', 'Link Rewrite', 'manage_options', 'wp_link_rewriter', array(get_class(), 'link_rewriter_menupage'));
-	 	add_submenu_page('wp_link_rewriter', 'local links', 'Local Links', 'manage_options', 'submenu_page_for_local_links', array(get_class(), 'local_links_submenu_page'));
+	 	
 	 }
 	 
 	 
@@ -50,14 +43,7 @@
 	  static function link_rewriter_menupage(){
 	  	include self::get_script_location('link_rewriter_menupage.php');
 	  }
-	  
-	  /**
-	   * submenu page to advertise local links
-	   */
-	  static function local_links_submenu_page(){
-	  	include self::get_script_location('local_links_submenu_page.php');
-	  }
-	  
+	   
 	  
 	  /**
 	   * get admin scripts
@@ -93,14 +79,11 @@
 	   		switch ($params['type']){
 				case "checkbox":
 					$checked = $current_value == 1 ? "checked" : "";
-				//	return "<input name='{$params['name']}' type='checkbox' value='1' {$checked}  />";
-				//	return '<input type="checkbox" name="'.$aff[$params['name']].'" value="1" '.$checked.' >';
-					return '<input type="checkbox" name="'.$aff. '['.$params['name'].']' .'" value="1" '.$checked.' >';
+					return '<input type="checkbox" id="'.$aff. '['.$params['name'].']' .'" name="'.$aff. '['.$params['name'].']' .'" value="1" '.$checked.' > <label for="'.$aff. '['.$params['name'].']' .'"> '.$params['description'].' </label> ';
 					break;
-				case "input":
-				//	return "<input name='{$params['name']}' type='text' value='{$current_value}/>'";
-				//	return '<input type="checkbox" name="'.$aff[$params['name']].'" value="'.$current_value.'" '.$checked.' >';
-					return '<input type="checkbox" name="'.$aff. '['.$params['name'].']' .'" value="'.$current_value.' >';
+					
+				case "text":
+					return '<input type="text" id="'.$aff. '['.$params['name'].']' .'" name="'.$aff. '['.$params['name'].']' .'" value="'.$current_value.'" />  <label for="'.$aff. '['.$params['name'].']' .'"> '.$params['description'].' </label> ';
 					break;
 	   		}
 	   }
@@ -115,6 +98,7 @@
 	    }
 		
 		
+		
 		/**
 		 * ge the options set from menu page
 		 */
@@ -127,23 +111,28 @@
 		/**
 		 * return title followed by affiliates
 		 */
-		 static function include_affiliates_below_title($title, $post_id){
-		 	if(is_admin()) return $title; //if admin page return the original title
-		 	if(!in_array(get_post_type($post_id), array('product'))) return $title; //skip if the post type is post or page
-		 						 	
+		 static function get_affiliates_for_product_meta(){		 			 		 						 	
 		 	global $post;
-		 	
-			$keywords = self::get_keywords($post->ID);
-			$keywords = empty($keywords) ? $title : $keywords;
-						
-			$affiliate_links = self::get_affiliate_links($keywords, $post_id);	
+		 			 	
+			$keywords = self::get_keywords($post->ID); //keywords saved against each post/product
+			$options = WpLinkRewriter::get_options();  //global options for link rewrite
+									
+			$affiliate_links = self::get_affiliate_links($post->post_title, $keywords, $post->ID); //get affliates links
 			
 			$affiliates = array();
-			foreach($affiliate_links as $brand => $link){
-				$affiliates[$brand] = '<a target="_blank" href="'.$link.'">'.self::$affiliates_options[$brand]['title'].'</a>';			
+			foreach($affiliate_links as $brand => $link){				
+				$affiliates[$brand] = array(
+					'url' => $link,
+					'title' => self::$affiliates_options[$brand]['title'],
+					'button_text' => $options[$brand]['button_text'],
+					'store_info' => $options[$brand]['url']
+					
+				);
+				
 			}
-						
-			return $title . '<br/><p style="color: red">' . implode(' | ', $affiliates) . '</p>';		
+
+			return $affiliates;	
+					
 		 }
 		 
 				
@@ -194,16 +183,16 @@
 		  * generates affiliates links
 		  * return affiliate links baesed on options
 		  */
-		 static function get_affiliate_links($title, $post_id){
+		 static function get_affiliate_links($title, $keywords, $post_id){
 		 				
 			$options = WpLinkRewriter::get_options();
 			$affiliate_links = array();
-			$keywords = $title;
-						 
+									 
 			foreach(WpLinkRewriter::$affiliates_options as $aff => $param){
+				$aff_keywords = (isset($keywords[$aff]) && !empty($keywords[$aff])) ? $keywords[$aff] : $title; //filtering keys against title and keywords
 		 		foreach($param['form'] as $key => $con):
 					if((isset($options[$aff][$con['name']]))){
-						$affiliate_links[$aff] = self::get_affilate_url($aff, $keywords);
+						$affiliate_links[$aff] = self::get_affilate_url($aff, $aff_keywords);
 					}			
 				endforeach;
 		 	}
@@ -216,7 +205,7 @@
 		  * adds metabox to handle with affilate keywords
 		  */
 		 static function metabox_at_post_edit_page(){
-		  	add_meta_box('matebox-to-handle-keywords', 'Affiliate Keywords', array(get_class(), 'metabox_to_deal_keywords'), 'product', 'side', 'high');	   	
+		  	add_meta_box('matebox-to-handle-keywords', 'Affiliate Keywords', array(get_class(), 'metabox_to_deal_keywords'), 'product', 'advanced', 'high');	   	
 		 }
 		 
 		 
@@ -225,20 +214,38 @@
 		  */
 		 static function metabox_to_deal_keywords($post){
 		 	$keywords = self::get_keywords($post->ID);
-		 	echo '<strong>keywords to generate affiliate links</strong>';
-			echo '<p><input size="0%" type="text" value="'.$keywords.'" name="affiliate_keywords"></p>';
+			$keywords = !is_array($keywords) ? array() : $keywords;
+						
+			echo '<table class="form-table">';
+					 			
+			foreach(WpLinkRewriter::$affiliates_options as $aff => $param){
+				?>
+				<tr> <td>Keywords for <?php echo $param['title']; ?> </td> <td colspan="2"> <input type="text" size="50%", name="affiliate_keywords[<?php echo $aff; ?>]" value="<?php echo isset($keywords[$aff]) ? $keywords[$aff] : ''; ?>" ></td></tr>
+				<?php
+			}
+						
+			echo '</table>';
 		 }
 		
 		
+		/**
+		 * saves meta box information
+		 * checks auto save and ajax saving
+		 * other filters lke post type etc can also be added
+		 */
 		static function save_metabox_data($post_id){
 			// If this is an autosave, our form has not been submitted, so we don't want to do anything.
 			if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){
 				return;
 			}
 			
+			$keywords = array();			
 			//now it's safe to save info
 			if(isset($_POST['affiliate_keywords'])){
-				return self::save_keywords($post_id, $_POST['affiliate_keywords']);
+				foreach($_POST['affiliate_keywords'] as $key => $value){
+					$keywords[$key] = trim($value);
+				}
+				return self::save_keywords($post_id, $keywords);
 			}
 		}
 		
@@ -247,16 +254,15 @@
 		 * save keywords against each post
 		 */
 		static function save_keywords($post_id, $keywords){
-			update_post_meta($post_id, 'affiliate_keywords', trim($keywords));
+			update_post_meta($post_id, 'affiliate_keywords', $keywords);
 		}
 		
 		
 		/**
 		 * get saved keywords against each post
 		 */
-		static function get_keywords($post_id){
-			$keywords = get_post_meta($post_id, 'affiliate_keywords', true);
-			
+		static function get_keywords($post_id, $title = null){
+			$keywords = get_post_meta($post_id, 'affiliate_keywords', true);			
 			return empty($keywords) ? '' : $keywords;
 		}
 		

@@ -13,22 +13,29 @@ $parameters = array(
 					'default' => 'checked'
 				),
 				
-				/*
+				'aff_id' => array(
+					'type' 		    => 'text',
+					'name' 			=> 'aff_id',
+					'description'   => 'Affiliate ID',
+					'default'       => ''
+				),
+				
+				
 				'url' => array(
 					'type' => 'text',
 					'name' => 'url',
-					'description' => 'amazon product search url',
+					'description' => 'Store info Link',
 					'example' => ''
 				), 
 				
 				
-				'url_structure' => array(
+				'button_text' => array(
 					'type' => 'text',
-					'name' => 'url_structure',
-					'description' => 'Url structure',
+					'name' => 'button_text',
+					'description' => 'Button text',
 					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
 				),
-				 */ 
+				 
 			)
 		),
 		
@@ -45,23 +52,27 @@ $parameters = array(
 					'default' => 'checked'
 				),
 				
-				/*
+				'aff_id' => array(
+					'type' 		    => 'text',
+					'name' 			=> 'aff_id',
+					'description'   => 'Affiliate ID',
+					'default'       => ''
+				),
+				
+				
 				'url' => array(
 					'type' => 'text',
 					'name' => 'url',
-					'description' => 'amazon product search url',
+					'description' => 'Store info Link',
 					'example' => ''
 				), 
 				
-				
-				'url_structure' => array(
+				'button_text' => array(
 					'type' => 'text',
-					'name' => 'url_structure',
-					'description' => 'Url structure',
+					'name' => 'button_text',
+					'description' => 'Button text',
 					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
 				),
-				 * 
-				 */
 			)
 		),
 		
@@ -78,22 +89,27 @@ $parameters = array(
 					'default' => 'checked'
 				),
 				
-				/*
+				'aff_id' => array(
+					'type' 		    => 'text',
+					'name' 			=> 'aff_id',
+					'description'   => 'Affiliate ID',
+					'default'       => ''
+				),
+				
+				
 				'url' => array(
 					'type' => 'text',
 					'name' => 'url',
-					'description' => 'amazon product search url',
+					'description' => 'Store info Link',
 					'example' => ''
 				), 
 				
-				
-				'url_structure' => array(
+				'button_text' => array(
 					'type' => 'text',
-					'name' => 'url_structure',
-					'description' => 'Url structure',
+					'name' => 'button_text',
+					'description' => 'Button text',
 					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
 				),
-				 */ 
 			)
 		),
 		
@@ -109,22 +125,27 @@ $parameters = array(
 					'default' => 'checked'
 				),
 				
-				/*
+				'aff_id' => array(
+					'type' 		    => 'text',
+					'name' 			=> 'aff_id',
+					'description'   => 'Affiliate ID',
+					'default'       => ''
+				),
+				
+				
 				'url' => array(
 					'type' => 'text',
 					'name' => 'url',
-					'description' => 'amazon product search url',
+					'description' => 'Store info Link',
 					'example' => ''
 				), 
 				
-				
-				'url_structure' => array(
+				'button_text' => array(
 					'type' => 'text',
-					'name' => 'url_structure',
-					'description' => 'Url structure',
+					'name' => 'button_text',
+					'description' => 'Button text',
 					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
 				),
-				 */ 
 			)
 		),
 		
@@ -141,22 +162,27 @@ $parameters = array(
 					'default' => 'checked'
 				),
 				
-				/*
+				'aff_id' => array(
+					'type' 		    => 'text',
+					'name' 			=> 'aff_id',
+					'description'   => 'Affiliate ID',
+					'default'       => ''
+				),
+				
+			
 				'url' => array(
 					'type' => 'text',
 					'name' => 'url',
-					'description' => 'amazon product search url',
+					'description' => 'Store info Link',
 					'example' => ''
 				), 
 				
-				
-				'url_structure' => array(
+				'button_text' => array(
 					'type' => 'text',
-					'name' => 'url_structure',
-					'description' => 'Url structure',
+					'name' => 'button_text',
+					'description' => 'Button text',
 					'note' => 'http://www.amazon.com/s/? <input type"text" value="field-keywords=prodct name">'
 				),
-				 */ 
 			)
 		),
 		
